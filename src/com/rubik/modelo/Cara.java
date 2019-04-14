@@ -2,7 +2,7 @@ package com.rubik.modelo;
 
 public class Cara {
     private final char[][] colores;
-    private final byte NUM_FILAS = 3;
+    public static final byte NUM_FILAS = 4;
     
     /**
      * Inicia la matriz de colores con el color que se le pase como argumento
