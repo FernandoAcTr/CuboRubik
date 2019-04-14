@@ -2,716 +2,293 @@ package com.rubik.modelo;
 
 public class Cubo {
 
-    public Central piezaCentral[];
-    public Lateral piezaLateral[];
-    public Esquina piezaEsquina[];
-
-    public final static char UP = 'U';
-    public final static char DOWN = 'D';
-    public final static char LEFT = 'L';
-    public final static char RIGTH = 'R';
-    public final static char BACK = 'B';
-    public final static char FRONT = 'F';
-
-    public static final char COLOR_YELLOW = 'Y';
-    public static final char COLOR_BLUE = 'B';
-    public static final char COLOR_GREEN = 'G';
-    public static final char COLOR_WHITE = 'W';
-    public static final char COLOR_ORANGE = 'O';
-    public static final char COLOR_RED = 'R';
-
-    public Cubo() {
-        piezaCentral = new Central[Central.NUM_PZAS_CENTRALES];
-        for (int i = 0; i < piezaCentral.length; i++)
-            piezaCentral[i] = new Central();
-
-        piezaLateral = new Lateral[Lateral.NUM_PZAS_LATERAL];
-        for (int i = 0; i < piezaLateral.length; i++)
-            piezaLateral[i] = new Lateral();
-
-        piezaEsquina = new Esquina[Esquina.NUM_PZAS_ESQUINAS];
-        for (int i = 0; i < piezaEsquina.length; i++)
-            piezaEsquina[i] = new Esquina();
-
-        iniciaPiezas();
+    private final Cara cara1;
+    private final Cara cara2;
+    private final Cara cara3;
+    private final Cara cara4;
+    private final Cara cara5;
+    private final Cara cara6;
+    
+    public final static char UP_ORIENTATION = 'U';
+    public final static char DOWN_ORIENTATION = 'D';
+    public final static char LEFT_ORIENTATION = 'L';
+    public final static char RIGTH_ORIENTATION = 'R';
+    
+    public Cubo(){
+        cara1 = new Cara('W'); //White
+        cara2 = new Cara('G'); //Green
+        cara3 = new Cara('B'); //Blue
+        cara4 = new Cara('R'); //Red
+        cara5 = new Cara('O'); //Orange
+        cara6 = new Cara('Y'); //Yellow
     }
-
+    
     /**
-     * Debido a que una pieza central solo tiene una orientacion, esta puede funcionar como identificador.
-     * Con base en una orientacion puedo obtener una pieza central específica y regresar su color.
-     * El metodo recorre el array orientacion de cada pieza central para buscar la que se pasa por parametro.
-     *
-     * @param orientation la orientacion de la pieza que quiero encontrar su color
-     * @return El color de la pieza central que busco
+     * Gira una determinada fila a la derecha. Si se gira la fila 0 o la 1, las caras anexas superior o inferior tambien se ven 
+     * afectadas, por tanto se debe hacer una comprobacion
+     * @param numFila El numero de fila que se desea girar, comenzando desde 0
      */
-    public char getColorCentral(char orientation) {
-        boolean esta = false;
-        char color = 'T';
-        int i = 0, j = 0;
-
-        while (i < piezaCentral.length && !esta) {
-
-            j = 0;
-
-            while (j < piezaCentral[i].tupla.orientacion.length && !esta) {
-
-                if (piezaCentral[i].tupla.orientacion[j] == orientation) {
-                    esta = true;
-                    color = piezaCentral[i].tupla.color[j];
-                } else
-                    j++;
-            }
-
-            i++;
-        }
-
-        return color;
+    public void girarFila_D(int numFila){
+        if (numFila == 0)
+            rotarSuperior('R'); //Rigth
+        else if(numFila == 2)
+            rotarInferior('R');
+        
+        char[] filaCara1 = cara1.getFila(numFila);
+        char[] filaCara2 = cara2.getFila(numFila);
+        char[] filaCara3 = cara3.getFila(numFila);
+        char[] filaCara6 = cara6.getFila(numFila);
+        
+        cara1.cambiarFila(numFila, filaCara2);
+        cara2.cambiarFila(numFila, filaCara6);
+        cara6.cambiarFila(numFila, filaCara3);
+        cara3.cambiarFila(numFila, filaCara1);       
     }
-
+    
     /**
-     * Recupera uno de los colores de una pieza lateral especifica. Identificandola mediante sus dos orientaciones.
-     *
-     * @param orientation1 orientacion 1 de la pieza lateral
-     * @param orientation2 orientacion 2 de la pieza lateral
-     * @param orientColor  orientacion cuyo color quiero recuperar
-     * @return color de la pieza lateral en una de sus dos orientaciones
+     * Gira una determinada fila a la izquierda. Si se gira la fila 0 o la 1, las caras anexas superior o inferior tambien se ven 
+     * afectadas, por tanto se debe hacer una comprobacion
+     * @param numFila El numero de fila que se desea girar, comenzando desde 0
      */
-    public char getColorLateral(char orientation1, char orientation2, char orientColor) {
-        boolean esta = false;
-        boolean posicion1 = false;
-        boolean posicion2 = false;
-        int i = 0, j = 0, k = 0;
-        char color = 'T';
-
-        while (i < piezaLateral.length && !esta) {
-
-            j = 0;
-            while (j < piezaLateral[i].tupla.orientacion.length && !posicion1) {
-
-                if (piezaLateral[i].tupla.orientacion[j] == orientation1)
-                    posicion1 = true;
-                else
-                    j++;
-
-            }
-
-            k = 0;
-            while (k < piezaLateral[i].tupla.orientacion.length && !posicion2) {
-
-                if (piezaLateral[i].tupla.orientacion[k] == orientation2)
-                    posicion2 = true;
-                else
-                    k++;
-            }
-
-            if (posicion1 && posicion2) {
-                if (orientation1 == orientColor)
-                    color = piezaLateral[i].tupla.color[j];
-                else
-                    color = piezaLateral[i].tupla.color[k];
-
-                esta = true;
-            } else {
-                posicion1 = false;
-                posicion2 = false;
-                i++;
-            }
-        }
-
-        return color;
-    }
-
+    public void girarFila_I(int numFila){
+        if (numFila == 0)
+            rotarSuperior('L'); //Left
+        else if(numFila == 2)
+            rotarInferior('L'); //Left
+        
+        char[] filaCara1 = cara1.getFila(numFila);
+        char[] filaCara2 = cara2.getFila(numFila);
+        char[] filaCara3 = cara3.getFila(numFila);
+        char[] filaCara6 = cara6.getFila(numFila);
+       
+        cara1.cambiarFila(numFila, filaCara3);
+        cara3.cambiarFila(numFila, filaCara6);
+        cara6.cambiarFila(numFila, filaCara2);
+        cara2.cambiarFila(numFila, filaCara1);       
+    } 
+    
     /**
-     * Recupera uno de los colores de una pieza esquina especifica. Identificandola mediante sus tres orientaciones.
-     *
-     * @param orientation1 la orientacion 1 de la pieza en cuestion
-     * @param orientation2 la orientacion 2 de la pueza en cuestion
-     * @param orientation3 la orientacion 3 de la pieza en cuestion
-     * @param orientColor  la orientacion cuyo color quiero recuperar
-     * @return
+     * Este metodo se encarga de girar una columna hacia abajo. Si se gira la columna 0 o 2, llama al metodo encargado de 
+     * rotar las caras conjuntas a la columna
+     * @param numColumna el numero de columna que se desea rotar, comenzando desde 0
      */
-    public char getColorEsquina(char orientation1, char orientation2, char orientation3, char orientColor) {
-        boolean esta = false;
-        boolean posicion1 = false;
-        boolean posicion2 = false;
-        boolean posicion3 = false;
-        char color = 'T';
-        int i = 0, j = 0, k = 0, l = 0;
-
-        while (i < piezaEsquina.length && !esta) {
-
-            j = 0;
-            while (j < piezaEsquina[i].tupla.orientacion.length && !posicion1) {
-
-                if (piezaEsquina[i].tupla.orientacion[j] == orientation1)
-                    posicion1 = true;
-                else
-                    j++;
-            }
-
-            k = 0;
-            while (k < piezaEsquina[i].tupla.orientacion.length && !posicion2) {
-
-                if (piezaEsquina[i].tupla.orientacion[k] == orientation2)
-                    posicion2 = true;
-                else
-                    k++;
-            }
-
-            l = 0;
-            while (l < piezaEsquina[i].tupla.orientacion.length && !posicion3) {
-
-                if (piezaEsquina[i].tupla.orientacion[l] == orientation3)
-                    posicion3 = true;
-                else
-                    l++;
-            }
-
-            if (posicion1 && posicion2 && posicion3) {
-
-                if (orientation1 == orientColor)
-                    color = piezaEsquina[i].tupla.color[j];
-                else if (orientation2 == orientColor)
-                    color = piezaEsquina[i].tupla.color[k];
-                else
-                    color = piezaEsquina[i].tupla.color[l];
-
-                esta = true;
-            } else {
-                esta = false;
-                posicion1 = false;
-                posicion2 = false;
-                posicion3 = false;
-                i++;
-            }
+    public void girarColumna_Abajo(int numColumna){
+        /**
+         * Se inicia una variable "trasera" con el indice que la cara frontal y la lateral compraten (1), debido a que
+         * la columna 0 frontal, es la 1 trasera y viceversa, se debe hacer un cambio
+         */
+        int trasera = 1; 
+        
+        if(numColumna == 2){
+           trasera = 0;
+           rotarLateral_D('D');
         }
-
-        return color;
+        else if(numColumna == 0){
+            trasera = 2;
+            rotarLateral_I('D');
+        }
+        
+        char[] colCara1 = cara1.getColumna(numColumna);
+        char[] colCara4 = cara4.getColumna(numColumna);
+        char[] colCara5 = cara5.getColumna(numColumna);
+        char[] colCara6 = cara6.getColumna(trasera);        
+       
+        cara1.cambiarColumna(numColumna, colCara5);
+        cara5.cambiarColumna(numColumna, voltearColumna(colCara6));
+        cara6.cambiarColumna(trasera, voltearColumna(colCara4));
+        cara4.cambiarColumna(numColumna, colCara1);       
     }
-
-    public void imprimePiezas() {
-        System.out.println("    " + getColorEsquina('U', 'L', 'B', 'U') + getColorLateral('U', 'B', 'U') + getColorEsquina('U', 'R', 'B', 'U'));
-        System.out.println("    " + getColorLateral('U', 'L', 'U') + getColorCentral('U') + getColorLateral('U', 'R', 'U'));
-        System.out.println("    " + getColorEsquina('U', 'F', 'L', 'U') + getColorLateral('U', 'F', 'U') + getColorEsquina('U', 'F', 'R', 'U'));
-
-        System.out.print("" + getColorEsquina('L', 'U', 'B', 'L') + getColorLateral('L', 'U', 'L') + getColorEsquina('L', 'U', 'F', 'L') + " ");
-        System.out.print("" + getColorEsquina('F', 'U', 'L', 'F') + getColorLateral('F', 'U', 'F') + getColorEsquina('F', 'U', 'R', 'F') + " ");
-        System.out.print("" + getColorEsquina('F', 'U', 'R', 'R') + getColorLateral('R', 'U', 'R') + getColorEsquina('R', 'U', 'B', 'R') + " ");
-
-        System.out.println("" + getColorEsquina('B', 'U', 'R', 'B') + getColorLateral('B', 'U', 'B') + getColorEsquina('B', 'U', 'L', 'B') + " ");
-        System.out.print("" + getColorLateral('L', 'B', 'L') + getColorCentral('L') + getColorLateral('L', 'F', 'L') + " ");
-        System.out.print("" + getColorLateral('L', 'F', 'F') + getColorCentral('F') + getColorLateral('F', 'R', 'F') + " ");
-
-        System.out.print("" + getColorLateral('F', 'R', 'R') + getColorCentral('R') + getColorLateral('R', 'B', 'R') + " ");
-        System.out.println("" + getColorLateral('R', 'B', 'B') + getColorCentral('B') + getColorLateral('L', 'B', 'B') + " ");
-        System.out.print("" + getColorEsquina('L', 'D', 'B', 'L') + getColorLateral('L', 'D', 'L') + getColorEsquina('L', 'D', 'F', 'L') + " ");
-
-        System.out.print("" + getColorEsquina('F', 'D', 'L', 'F') + getColorLateral('F', 'D', 'F') + getColorEsquina('F', 'D', 'R', 'F') + " ");
-        System.out.print("" + getColorEsquina('F', 'D', 'R', 'R') + getColorLateral('R', 'D', 'R') + getColorEsquina('R', 'D', 'B', 'R') + " ");
-        System.out.println("" + getColorEsquina('B', 'D', 'R', 'B') + getColorLateral('B', 'D', 'B') + getColorEsquina('B', 'D', 'L', 'B') + " ");
-
-        System.out.println("    " + getColorEsquina('D', 'L', 'F', 'D') + getColorLateral('D', 'F', 'D') + getColorEsquina('D', 'F', 'R', 'D'));
-        System.out.println("    " + getColorLateral('D', 'L', 'D') + getColorCentral('D') + getColorLateral('D', 'R', 'D'));
-        System.out.println("    " + getColorEsquina('D', 'L', 'B', 'D') + getColorLateral('D', 'B', 'D') + getColorEsquina('D', 'R', 'B', 'D'));
-
+    
+    /**
+     * Este metodo se encarga de girar una columna hacia arriba. Si se gira la columna 0 o 2, llama al metodo encargado de 
+     * rotar las caras conjuntas a la columna
+     * @param numColumna el numero de columna que se desea rotar, comenzando desde 0
+     */
+    public void girarColumna_Arriba(int numColumna){
+        /**
+         * Se inicia una variable "trasera" con el indice que la cara frontal y la lateral compraten (1), debido a que
+         * la columna 0 frontal, es la 1 trasera y viceversa, se debe hacer un cambio
+         */
+        int trasera = 1; 
+        
+        if(numColumna == 2){
+            trasera = 0;
+           rotarLateral_D('U');
+        }
+        else if(numColumna == 0){
+            trasera = 2;
+            rotarLateral_I('U');
+        }
+        
+        char[] colCara1 = cara1.getColumna(numColumna);
+        char[] colCara4 = cara4.getColumna(numColumna);
+        char[] colCara5 = cara5.getColumna(numColumna);
+        char[] colCara6 = cara6.getColumna(trasera);   
+        
+        cara1.cambiarColumna(numColumna, colCara4);
+        cara4.cambiarColumna(numColumna, voltearColumna(colCara6));
+        cara6.cambiarColumna(trasera, voltearColumna(colCara5));
+        cara5.cambiarColumna(numColumna, colCara1);        
+    }
+    
+    public void girarCubo_Arriba(){
+        girarColumna_Arriba(0);
+        girarColumna_Arriba(1);
+        girarColumna_Arriba(2);
+    }
+    
+    public void girarCubo_Abajo(){
+        girarColumna_Abajo(0);
+        girarColumna_Abajo(1);
+        girarColumna_Abajo(2);
+    }
+    
+    public void girarCubo_D(){
+        girarFila_D(0);
+        girarFila_D(1);
+        girarFila_D(2);
+    }
+    
+    public void girarCubo_I(){
+        girarFila_I(0);
+        girarFila_I(1);
+        girarFila_I(2);
+    }
+    
+    /**
+     * Este metodo sera llamado cuando se gira la columna 2 del cubo, pues la cara 3, (la que esta junta a la columna, por la derecha)
+    tambien se ve afectada
+     * @param sentido Es el sentido de rotacion D --> Down (la columna se gira hacia abajo) U --> Up (la columna se gira hacia arriba)
+     */
+    private void rotarLateral_D(char sentido){       
+        if(sentido == 'D'){ //U --> Up. D --> Down
+            char[] v_col0 = cara3.getColumna(0);
+            char[] v_col1 = cara3.getColumna(1);
+            char[] v_col2 = cara3.getColumna(2);
+            cara3.cambiarFila(0, v_col2);
+            cara3.cambiarFila(1, v_col1);
+            cara3.cambiarFila(2, v_col0);
+        }else{
+            char[] v_fila0 = cara3.getFila(0);
+            char[] v_fila1 = cara3.getFila(1);
+            char[] v_fila2 = cara3.getFila(2);
+            cara3.cambiarColumna(0, v_fila2);
+            cara3.cambiarColumna(1, v_fila1);
+            cara3.cambiarColumna(2, v_fila0);
+        }
+    }
+    
+    /**
+     * Este metodo sera llamado cuando se gira la columna 0 del cubo, pues la cara 2, (la que esta junta a la columna, por la izquierda)
+    tambien se ve afectada
+     * @param sentido Es el sentido de rotacion D --> Down (la columna se gira hacia abajo) U --> Up (la columna se gira hacia arriba)
+     */
+    private void rotarLateral_I(char sentido){
+        if(sentido == 'D'){//U --> Up. D --> Down
+            char[] v_fila0 = cara2.getFila(0);
+            char[] v_fila1 = cara2.getFila(1);
+            char[] v_fila2 = cara2.getFila(2);
+            cara2.cambiarColumna(0, v_fila2);
+            cara2.cambiarColumna(1, v_fila1);
+            cara2.cambiarColumna(2, v_fila0);
+        }else{
+            char[] v_col0 = cara2.getColumna(0);
+            char[] v_col1 = cara2.getColumna(1);
+            char[] v_col2 = cara2.getColumna(2);
+            cara2.cambiarFila(0, v_col2);
+            cara2.cambiarFila(1, v_col1);
+            cara2.cambiarFila(2, v_col0);
+        }
+    }
+    
+    /**
+     * Este metodo sera llamado cuando se gira la fila 0 del cubo, pues la cara 5, (la que esta junta a la fila, por arriba)
+    tambien se ve afectada
+     * @param sentido Es el sentido de rotacion R --> Rigth (la fila se gira a la derecha) L --> Left (la fila se gira a la izquierda)
+     */
+    private void rotarSuperior(char sentido){
+        if(sentido == 'R')
+        {
+            char[] v_col0 = cara5.getColumna(0);
+            char[] v_col1 = cara5.getColumna(1);
+            char[] v_col2 = cara5.getColumna(2);
+            cara5.cambiarFila(0, v_col2);
+            cara5.cambiarFila(1, v_col1);
+            cara5.cambiarFila(2, v_col0);            
+        }else{            
+            char[] v_fila0 = cara5.getFila(0);
+            char[] v_fila1 = cara5.getFila(1);
+            char[] v_fila2 = cara5.getFila(2);
+            cara5.cambiarColumna(0, v_fila2);
+            cara5.cambiarColumna(1, v_fila1);
+            cara5.cambiarColumna(2, v_fila0);
+        }
+    }
+    
+    /**
+     * Este metodo sera llamado cuando se gira la fila 2 del cubo, pues la cara 4, (la que esta junta a la fila, por abajo)
+    tambien se ve afectada
+     * @param sentido Es el sentido de rotacion R --> Rigth (la fila se gira a la derecha) L --> Left (la fila se gira a la izquierda)
+     */
+    private void rotarInferior(char sentido){
+        if(sentido == 'R'){
+            char[] v_fila0 = cara4.getFila(0);
+            char[] v_fila1 = cara4.getFila(1);
+            char[] v_fila2 = cara4.getFila(2);
+            cara4.cambiarColumna(0, v_fila2);
+            cara4.cambiarColumna(1, v_fila1);
+            cara4.cambiarColumna(2, v_fila0);
+        }else{
+            char[] v_col0 = cara4.getColumna(0);
+            char[] v_col1 = cara4.getColumna(1);
+            char[] v_col2 = cara4.getColumna(2);
+            cara4.cambiarFila(0, v_col2);
+            cara4.cambiarFila(1, v_col1);
+            cara4.cambiarFila(2, v_col0);    
+        }
+    }
+    
+    /**
+     * Este metodo sera llamado cuando una columna del cubo se gire hacia abajo o hacia arriba, pues la columna trasera se gira, 
+     * pero de manera traspuesta en sus indices, es necesario voltearla
+     * @param columna : Columna que se desea trasponer
+     */
+    private char[] voltearColumna(char columna[]){
+        char aux;
+        aux = columna[0];
+        columna[0] = columna[2];
+        columna[2] = aux;
+        
+        return columna;
+    }
+    
+    public void mostrarCubo(){
+        String espacios = "       "; // 7 espacios
+        System.out.println(espacios+cara5.getCadenaFila(0));
+        System.out.println(espacios+cara5.getCadenaFila(1));
+        System.out.println(espacios+cara5.getCadenaFila(2));
         System.out.println("");
+        
+        System.out.println(cara2.getCadenaFila(0) +" "+ cara1.getCadenaFila(0) +" "+ cara3.getCadenaFila(0));
+        System.out.println(cara2.getCadenaFila(1) +" "+ cara1.getCadenaFila(1) +" "+ cara3.getCadenaFila(1));
+        System.out.println(cara2.getCadenaFila(2) +" "+ cara1.getCadenaFila(2) +" "+ cara3.getCadenaFila(2));
+        System.out.println("");
+        
+        System.out.println(espacios+cara4.getCadenaFila(0));
+        System.out.println(espacios+cara4.getCadenaFila(1));
+        System.out.println(espacios+cara4.getCadenaFila(2));
+        System.out.println("");
+        
+        System.out.println(espacios+cara6.getCadenaFila(0));
+        System.out.println(espacios+cara6.getCadenaFila(1));
+        System.out.println(espacios+cara6.getCadenaFila(2));
     }
-
-    //<editor-fold desc="Metodo que inicializa las piezas">
-    public void iniciaPiezas() {
-        piezaCentral[0].tupla.color[0] = 'B';
-        piezaCentral[0].tupla.orientacion[0] = 'R';
-        piezaCentral[1].tupla.color[0] = 'Y';
-        piezaCentral[1].tupla.orientacion[0] = 'F';
-        piezaCentral[2].tupla.color[0] = 'R';
-        piezaCentral[2].tupla.orientacion[0] = 'U';
-        piezaCentral[3].tupla.color[0] = 'G';
-        piezaCentral[3].tupla.orientacion[0] = 'L';
-        piezaCentral[4].tupla.color[0] = 'O';
-        piezaCentral[4].tupla.orientacion[0] = 'D';
-        piezaCentral[5].tupla.color[0] = 'W';
-        piezaCentral[5].tupla.orientacion[0] = 'B';
-
-        piezaLateral[0].tupla.color[0] = 'R';
-        piezaLateral[0].tupla.orientacion[0] = 'U';
-        piezaLateral[0].tupla.color[1] = 'Y';
-        piezaLateral[0].tupla.orientacion[1] = 'F';
-        piezaLateral[1].tupla.color[0] = 'B';
-        piezaLateral[1].tupla.orientacion[0] = 'R';
-        piezaLateral[1].tupla.color[1] = 'Y';
-        piezaLateral[1].tupla.orientacion[1] = 'F';
-        piezaLateral[2].tupla.color[0] = 'O';
-        piezaLateral[2].tupla.orientacion[0] = 'D';
-        piezaLateral[2].tupla.color[1] = 'Y';
-        piezaLateral[2].tupla.orientacion[1] = 'F';
-        piezaLateral[3].tupla.color[0] = 'G';
-        piezaLateral[3].tupla.orientacion[0] = 'L';
-        piezaLateral[3].tupla.color[1] = 'Y';
-        piezaLateral[3].tupla.orientacion[1] = 'F';
-        piezaLateral[4].tupla.color[0] = 'R';
-        piezaLateral[4].tupla.orientacion[0] = 'U';
-        piezaLateral[4].tupla.color[1] = 'B';
-        piezaLateral[4].tupla.orientacion[1] = 'R';
-        piezaLateral[5].tupla.color[0] = 'R';
-        piezaLateral[5].tupla.orientacion[0] = 'U';
-        piezaLateral[5].tupla.color[1] = 'G';
-        piezaLateral[5].tupla.orientacion[1] = 'L';
-        piezaLateral[6].tupla.color[0] = 'O';
-        piezaLateral[6].tupla.orientacion[0] = 'D';
-        piezaLateral[6].tupla.color[1] = 'B';
-        piezaLateral[6].tupla.orientacion[1] = 'R';
-        piezaLateral[7].tupla.color[0] = 'O';
-        piezaLateral[7].tupla.orientacion[0] = 'D';
-        piezaLateral[7].tupla.color[1] = 'G';
-        piezaLateral[7].tupla.orientacion[1] = 'L';
-        piezaLateral[8].tupla.color[0] = 'R';
-        piezaLateral[8].tupla.orientacion[0] = 'U';
-        piezaLateral[8].tupla.color[1] = 'W';
-        piezaLateral[8].tupla.orientacion[1] = 'B';
-        piezaLateral[9].tupla.color[0] = 'G';
-        piezaLateral[9].tupla.orientacion[0] = 'L';
-        piezaLateral[9].tupla.color[1] = 'W';
-        piezaLateral[9].tupla.orientacion[1] = 'B';
-        piezaLateral[10].tupla.color[0] = 'B';
-        piezaLateral[10].tupla.orientacion[0] = 'R';
-        piezaLateral[10].tupla.color[1] = 'W';
-        piezaLateral[10].tupla.orientacion[1] = 'B';
-        piezaLateral[11].tupla.color[0] = 'O';
-        piezaLateral[11].tupla.orientacion[0] = 'D';
-        piezaLateral[11].tupla.color[1] = 'W';
-        piezaLateral[11].tupla.orientacion[1] = 'B';
-
-        piezaEsquina[0].tupla.color[0] = 'R';
-        piezaEsquina[0].tupla.orientacion[0] = 'U';
-        piezaEsquina[0].tupla.color[1] = 'Y';
-        piezaEsquina[0].tupla.orientacion[1] = 'F';
-        piezaEsquina[0].tupla.color[2] = 'B';
-        piezaEsquina[0].tupla.orientacion[2] = 'R';
-        piezaEsquina[1].tupla.color[0] = 'R';
-        piezaEsquina[1].tupla.orientacion[0] = 'U';
-        piezaEsquina[1].tupla.color[1] = 'Y';
-        piezaEsquina[1].tupla.orientacion[1] = 'F';
-        piezaEsquina[1].tupla.color[2] = 'G';
-        piezaEsquina[1].tupla.orientacion[2] = 'L';
-        piezaEsquina[2].tupla.color[0] = 'O';
-        piezaEsquina[2].tupla.orientacion[0] = 'D';
-        piezaEsquina[2].tupla.color[1] = 'Y';
-        piezaEsquina[2].tupla.orientacion[1] = 'F';
-        piezaEsquina[2].tupla.color[2] = 'B';
-        piezaEsquina[2].tupla.orientacion[2] = 'R';
-        piezaEsquina[3].tupla.color[0] = 'O';
-        piezaEsquina[3].tupla.orientacion[0] = 'D';
-        piezaEsquina[3].tupla.color[1] = 'Y';
-        piezaEsquina[3].tupla.orientacion[1] = 'F';
-        piezaEsquina[3].tupla.color[2] = 'G';
-        piezaEsquina[3].tupla.orientacion[2] = 'L';
-        piezaEsquina[4].tupla.color[0] = 'R';
-        piezaEsquina[4].tupla.orientacion[0] = 'U';
-        piezaEsquina[4].tupla.color[1] = 'B';
-        piezaEsquina[4].tupla.orientacion[1] = 'R';
-        piezaEsquina[4].tupla.color[2] = 'W';
-        piezaEsquina[4].tupla.orientacion[2] = 'B';
-        piezaEsquina[5].tupla.color[0] = 'R';
-        piezaEsquina[5].tupla.orientacion[0] = 'U';
-        piezaEsquina[5].tupla.color[1] = 'G';
-        piezaEsquina[5].tupla.orientacion[1] = 'L';
-        piezaEsquina[5].tupla.color[2] = 'W';
-        piezaEsquina[5].tupla.orientacion[2] = 'B';
-        piezaEsquina[6].tupla.color[0] = 'O';
-        piezaEsquina[6].tupla.orientacion[0] = 'D';
-        piezaEsquina[6].tupla.color[1] = 'B';
-        piezaEsquina[6].tupla.orientacion[1] = 'R';
-        piezaEsquina[6].tupla.color[2] = 'W';
-        piezaEsquina[6].tupla.orientacion[2] = 'B';
-        piezaEsquina[7].tupla.color[0] = 'O';
-        piezaEsquina[7].tupla.orientacion[0] = 'D';
-        piezaEsquina[7].tupla.color[1] = 'G';
-        piezaEsquina[7].tupla.orientacion[1] = 'L';
-        piezaEsquina[7].tupla.color[2] = 'W';
-        piezaEsquina[7].tupla.orientacion[2] = 'B';
-    }
-    //</editor-fold>
-
+    
     /**
-     * Mueve la cara superior o inferior de manera horizontalmente, ya sea en sentido horario o antihorario.
-     * El algoritmo funciona mediante 3 barridos, el primero analiza todas las piezas laterales, para cada pieza lateral
-     * se barren todas sus orientaciones (2 orientaciones) (segundo barrido)
-     * si una de esas dos orientaciones es igual a la cara como paramentro
-     * significa que esa pieza se debe modificar. Ya identificada la pieza, se hace un tercer barrido de sus orientaciones
-     * para identificar la orientacion que debe de modificarse (la que es diferente a la cara)
-     * pues si se pretende mover la cara superior (Up), no tiene sentido
-     * modicar las orientaciones Up de las piezas. SE hace lo mismo con las piezas esquina
-     *
-     * @param cara  La cara superior o inferior que se desea mover. U o D
-     * @param signo 0 para sentido horario, 1 para sentido antihorario
+     * Metodo encargado de retornar la matriz que representa la cara frontal, para efector de la GUI
+     * @return char[][] matriz que representa la cara frontal
      */
-    public void movHorizontal(char cara, int signo) {
-        char secuenciaGiro[] = {'F', 'L', 'B', 'R'};
-
-        for (int i = 0; i < piezaLateral.length; i++)
-            for (int j = 0; j < piezaLateral[i].tupla.orientacion.length; j++)
-                if (piezaLateral[i].tupla.orientacion[j] == cara)
-                    for (int k = 0; k < piezaLateral[i].tupla.orientacion.length; k++)
-                        if (piezaLateral[i].tupla.orientacion[k] != cara) {
-
-                            char caraActual = piezaLateral[i].tupla.orientacion[k];
-                            int caraNueva = 0; //representa el indice de la secuencia de Giro
-                            while (caraActual != secuenciaGiro[caraNueva])
-                                caraNueva++;
-
-                            if (signo == 0)
-                                caraNueva++;
-                            else
-                                caraNueva--;
-
-                            if (caraNueva < 0)
-                                caraNueva = 3;
-                            else if (caraNueva > 3)
-                                caraNueva = 0;
-
-                            piezaLateral[i].tupla.orientacion[k] = secuenciaGiro[caraNueva];
-                        }
-
-
-        for (int i = 0; i < piezaEsquina.length; i++)
-            for (int j = 0; j < piezaEsquina[i].tupla.orientacion.length; j++)
-                if (piezaEsquina[i].tupla.orientacion[j] == cara)
-                    for (int k = 0; k < piezaEsquina[i].tupla.orientacion.length; k++)
-                        if (piezaEsquina[i].tupla.orientacion[k] != cara) {
-
-                            char caraActual = piezaEsquina[i].tupla.orientacion[k];
-                            int caraNueva = 0; //representa el indice de la secuencia de Giro
-                            while (caraActual != secuenciaGiro[caraNueva])
-                                caraNueva++;
-
-                            if (signo == 0)
-                                caraNueva++;
-                            else
-                                caraNueva--;
-
-                            if (caraNueva < 0)
-                                caraNueva = 3;
-                            else if (caraNueva > 3)
-                                caraNueva = 0;
-
-                            piezaEsquina[i].tupla.orientacion[k] = secuenciaGiro[caraNueva];
-                        }
-    }
-
-    /**
-     * Mueve la cara derecha o inzquierda de manera horizontalmente, ya sea en sentido horario o antihorario.
-     * El algoritmo funciona mediante 3 barridos, el primero analiza todas las piezas laterales, para cada pieza lateral
-     * se barren todas sus orientaciones (2 orientaciones) (segundo barrido)
-     * si una de esas dos orientaciones es igual a la cara como paramentro
-     * significa que esa pieza se debe modificar. Ya identificada la pieza, se hace un tercer barrido de sus orientaciones
-     * para identificar la orientacion que debe de modificarse (la que es diferente a la cara)
-     * pues si se pretende mover la cara izquierda (Left), no tiene sentido
-     * modicar las orientaciones L de las piezas. Se hace lo mismo con las piezas esquina
-     *
-     * @param cara  La cara (derecha o izquierda) que se desea mover. L o R
-     * @param signo 0 para sentido horario, 1 para sentido antihorario
-     */
-    public void movVertical(char cara, int signo) {
-        char secuenciaGiro[] = {'F', 'D', 'B', 'U'};
-
-        for (int i = 0; i < piezaLateral.length; i++)
-            for (int j = 0; j < piezaLateral[i].tupla.orientacion.length; j++)
-                if (piezaLateral[i].tupla.orientacion[j] == cara)
-                    for (int k = 0; k < piezaLateral[i].tupla.orientacion.length; k++)
-                        if (piezaLateral[i].tupla.orientacion[k] != cara) {
-
-                            char caraActual = piezaLateral[i].tupla.orientacion[k];
-                            int caraNueva = 0; //representa el indice de la secuencia de Giro
-                            while (caraActual != secuenciaGiro[caraNueva])
-                                caraNueva++;
-
-                            if (signo == 0)
-                                caraNueva++;
-                            else
-                                caraNueva--;
-
-                            if (caraNueva < 0)
-                                caraNueva = 3;
-                            else if (caraNueva > 3)
-                                caraNueva = 0;
-
-                            piezaLateral[i].tupla.orientacion[k] = secuenciaGiro[caraNueva];
-                        }
-
-        for (int i = 0; i < piezaEsquina.length; i++)
-            for (int j = 0; j < piezaEsquina[i].tupla.orientacion.length; j++)
-                if (piezaEsquina[i].tupla.orientacion[j] == cara)
-                    for (int k = 0; k < piezaEsquina[i].tupla.orientacion.length; k++)
-                        if (piezaEsquina[i].tupla.orientacion[k] != cara) {
-
-                            char caraActual = piezaEsquina[i].tupla.orientacion[k];
-                            int caraNueva = 0; //representa el indice de la secuencia de Giro
-                            while (caraActual != secuenciaGiro[caraNueva])
-                                caraNueva++;
-
-                            if (signo == 0)
-                                caraNueva++;
-                            else
-                                caraNueva--;
-
-                            if (caraNueva < 0)
-                                caraNueva = 3;
-                            else if (caraNueva > 3)
-                                caraNueva = 0;
-
-                            piezaEsquina[i].tupla.orientacion[k] = secuenciaGiro[caraNueva];
-                        }
-    }
-
-    /**
-     * Mueve la cara frontal o trasera de manera horizontalmente, ya sea en sentido horario o antihorario.
-     * El algoritmo funciona mediante 3 barridos, el primero analiza todas las piezas laterales, para cada pieza lateral
-     * se barren todas sus orientaciones (2 orientaciones) (segundo barrido)
-     * si una de esas dos orientaciones es igual a la cara como paramentro
-     * significa que esa pieza se debe modificar. Ya identificada la pieza, se hace un tercer barrido de sus orientaciones
-     * para identificar la orientacion que debe de modificarse (la que es diferente a la cara)
-     * pues si se pretende mover la cara frontal (Front), no tiene sentido
-     * modicar las orientaciones F de las piezas. Se hace lo mismo con las piezas esquina
-     *
-     * @param cara  La cara (front o back) que se desea mover. F o B
-     * @param signo 0 para sentido horario, 1 para sentido antihorario
-     */
-    public void movFrontal(char cara, int signo) {
-        char secuenciaGiro[] = {'U', 'R', 'D', 'L'};
-
-        for (int i = 0; i < piezaLateral.length; i++)
-            for (int j = 0; j < piezaLateral[i].tupla.orientacion.length; j++)
-                if (piezaLateral[i].tupla.orientacion[j] == cara)
-                    for (int k = 0; k < piezaLateral[i].tupla.orientacion.length; k++)
-                        if (piezaLateral[i].tupla.orientacion[k] != cara) {
-
-                            char caraActual = piezaLateral[i].tupla.orientacion[k];
-                            int caraNueva = 0; //representa el indice de la secuencia de Giro
-                            while (caraActual != secuenciaGiro[caraNueva])
-                                caraNueva++;
-
-                            if (signo == 0)
-                                caraNueva++;
-                            else
-                                caraNueva--;
-
-                            if (caraNueva < 0)
-                                caraNueva = 3;
-                            else if (caraNueva > 3)
-                                caraNueva = 0;
-
-                            piezaLateral[i].tupla.orientacion[k] = secuenciaGiro[caraNueva];
-                        }
-
-        for (int i = 0; i < piezaEsquina.length; i++)
-            for (int j = 0; j < piezaEsquina[i].tupla.orientacion.length; j++)
-                if (piezaEsquina[i].tupla.orientacion[j] == cara)
-                    for (int k = 0; k < piezaEsquina[i].tupla.orientacion.length; k++)
-                        if (piezaEsquina[i].tupla.orientacion[k] != cara) {
-
-                            char caraActual = piezaEsquina[i].tupla.orientacion[k];
-                            int caraNueva = 0; //representa el indice de la secuencia de Giro
-                            while (caraActual != secuenciaGiro[caraNueva])
-                                caraNueva++;
-
-                            if (signo == 0)
-                                caraNueva++;
-                            else
-                                caraNueva--;
-
-                            if (caraNueva < 0)
-                                caraNueva = 3;
-                            else if (caraNueva > 3)
-                                caraNueva = 0;
-
-                            piezaEsquina[i].tupla.orientacion[k] = secuenciaGiro[caraNueva];
-                        }
-    }
-
-
-    /**
-     * Mueve la cruz central de manera vertical, en sentido horario o antihorario
-     * @param signo 0 para sentido horario, 1 para sentido antihorario
-     */
-    public void movCruzVertical(int signo) {
-        boolean modificar = true;
-        char secuenciaGiro[] = {'F', 'D', 'B', 'U'};
-
-        for (int i = 0; i < piezaCentral.length; i++)
-            if (piezaCentral[i].tupla.orientacion[0] != LEFT && piezaCentral[i].tupla.orientacion[0] != RIGTH) {
-                char caraActual = piezaCentral[i].tupla.orientacion[0];
-                int caraNueva = 0;
-                while (caraActual != secuenciaGiro[caraNueva])
-                    caraNueva++;
-
-                if (signo == 0)
-                    caraNueva++;
-                else
-                    caraNueva--;
-
-                if (caraNueva < 0)
-                    caraNueva = 3;
-                else if (caraNueva > 3)
-                    caraNueva = 0;
-
-                piezaCentral[i].tupla.orientacion[0] = secuenciaGiro[caraNueva];
-            }
-
-        for (int i = 0; i < piezaLateral.length; i++) {
-            modificar = true;
-
-            for (int j = 0; j < piezaLateral[i].tupla.orientacion.length; j++) {
-                if (piezaLateral[i].tupla.orientacion[j] == LEFT || piezaLateral[i].tupla.orientacion[j] == RIGTH)
-                    modificar = false;
-            }
-
-
-            if (modificar) {
-                for (int k = 0; k < piezaLateral[i].tupla.orientacion.length; k++) {
-
-                    char caraActual = piezaLateral[i].tupla.orientacion[k];
-                    int caraNueva = 0;
-                    while (caraActual != secuenciaGiro[caraNueva])
-                        caraNueva++;
-
-                    if (signo == 0)
-                        caraNueva++;
-                    else
-                        caraNueva--;
-
-                    if (caraNueva < 0)
-                        caraNueva = 3;
-                    else if (caraNueva > 3)
-                        caraNueva = 0;
-
-                    piezaLateral[i].tupla.orientacion[k] = secuenciaGiro[caraNueva];
-                }
-            }
-        }
-
-    }
-
-    /**
-     * Mueve la cruz central de manera horizontal, en sentido horario o antihorario
-     * @param signo 0 para sentido horario, 1 para sentido antihorario
-     */
-    public void movCruzHorizontal(int signo){
-        boolean modificar = true;
-        char secuenciaGiro[] = {'F', 'L', 'B', 'R'};
-
-        for (int i = 0; i < piezaCentral.length; i++)
-            if (piezaCentral[i].tupla.orientacion[0] != UP && piezaCentral[i].tupla.orientacion[0] != DOWN) {
-                char caraActual = piezaCentral[i].tupla.orientacion[0];
-                int caraNueva = 0;
-                while (caraActual != secuenciaGiro[caraNueva])
-                    caraNueva++;
-
-                if (signo == 0)
-                    caraNueva++;
-                else
-                    caraNueva--;
-
-                if (caraNueva < 0)
-                    caraNueva = 3;
-                else if (caraNueva > 3)
-                    caraNueva = 0;
-
-                piezaCentral[i].tupla.orientacion[0] = secuenciaGiro[caraNueva];
-            }
-
-        for (int i = 0; i < piezaLateral.length; i++) {
-            modificar = true;
-
-            for (int j = 0; j < piezaLateral[i].tupla.orientacion.length; j++) {
-                if (piezaLateral[i].tupla.orientacion[j] == UP || piezaLateral[i].tupla.orientacion[j] == DOWN)
-                    modificar = false;
-            }
-
-
-            if (modificar) {
-                for (int k = 0; k < piezaLateral[i].tupla.orientacion.length; k++) {
-
-                    char caraActual = piezaLateral[i].tupla.orientacion[k];
-                    int caraNueva = 0;
-                    while (caraActual != secuenciaGiro[caraNueva])
-                        caraNueva++;
-
-                    if (signo == 0)
-                        caraNueva++;
-                    else
-                        caraNueva--;
-
-                    if (caraNueva < 0)
-                        caraNueva = 3;
-                    else if (caraNueva > 3)
-                        caraNueva = 0;
-
-                    piezaLateral[i].tupla.orientacion[k] = secuenciaGiro[caraNueva];
-                }
-            }
-        }
-    }
-
-    /**
-     * Mueve la cruz del eje frontal, en sentido horario o antihorario
-     * @param signo 0 para sentido horario, 1 para sentido antihorario
-     */
-    public void movCruzFrontal(int signo){
-        boolean modificar = true;
-        char secuenciaGiro[] = {'U', 'R', 'D', 'L'};
-
-        for (int i = 0; i < piezaCentral.length; i++)
-            if (piezaCentral[i].tupla.orientacion[0] != FRONT && piezaCentral[i].tupla.orientacion[0] != BACK) {
-                char caraActual = piezaCentral[i].tupla.orientacion[0];
-                int caraNueva = 0;
-                while (caraActual != secuenciaGiro[caraNueva])
-                    caraNueva++;
-
-                if (signo == 0)
-                    caraNueva++;
-                else
-                    caraNueva--;
-
-                if (caraNueva < 0)
-                    caraNueva = 3;
-                else if (caraNueva > 3)
-                    caraNueva = 0;
-
-                piezaCentral[i].tupla.orientacion[0] = secuenciaGiro[caraNueva];
-            }
-
-        for (int i = 0; i < piezaLateral.length; i++) {
-            modificar = true;
-
-            for (int j = 0; j < piezaLateral[i].tupla.orientacion.length; j++) {
-                if (piezaLateral[i].tupla.orientacion[j] == FRONT || piezaLateral[i].tupla.orientacion[j] == BACK)
-                    modificar = false;
-            }
-
-
-            if (modificar) {
-                for (int k = 0; k < piezaLateral[i].tupla.orientacion.length; k++) {
-
-                    char caraActual = piezaLateral[i].tupla.orientacion[k];
-                    int caraNueva = 0;
-                    while (caraActual != secuenciaGiro[caraNueva])
-                        caraNueva++;
-
-                    if (signo == 0)
-                        caraNueva++;
-                    else
-                        caraNueva--;
-
-                    if (caraNueva < 0)
-                        caraNueva = 3;
-                    else if (caraNueva > 3)
-                        caraNueva = 0;
-
-                    piezaLateral[i].tupla.orientacion[k] = secuenciaGiro[caraNueva];
-                }
-            }
-        }
+    public Cara getCaraFrontal(){
+        return cara1;
     }
 }
-
-
