@@ -2,7 +2,7 @@ package com.rubik.modelo;
 
 public class Cara {
     private final char[][] colores;
-    public static final byte NUM_FILAS = 4;
+    public static final byte NUM_FILAS = 5;
     
     /**
      * Inicia la matriz de colores con el color que se le pase como argumento
@@ -18,7 +18,7 @@ public class Cara {
     /**
      * Cambia una determinada columna de la cara(matriz) por los colores de la columna como argumento
      * @param numColumna el numero de columna que se quiere cambiar
-     * @param columna loc solores que conteiene la nueva columna
+     * @param columna los colores que conteiene la nueva columna
      */
     public void cambiarColumna(int numColumna, char[] columna){
         for(int fila= 0; fila<NUM_FILAS; fila++)

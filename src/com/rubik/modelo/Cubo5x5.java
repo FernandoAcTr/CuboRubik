@@ -1,6 +1,6 @@
 package com.rubik.modelo;
 
-public class Cubo4x4 {
+public class Cubo5x5 {
 
     private final Cara cara1;
     private final Cara cara2;
@@ -9,7 +9,7 @@ public class Cubo4x4 {
     private final Cara cara5;
     private final Cara cara6;
     
-    public Cubo4x4(){
+    public Cubo5x5(){
         cara1 = new Cara('W'); //White
         cara2 = new Cara('G'); //Green
         cara3 = new Cara('B'); //Blue
