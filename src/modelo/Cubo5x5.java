@@ -53,7 +53,7 @@ public class Cubo5x5 {
     public void girarFila_I(int numFila) {
         if (numFila == 0)
             trasponerCara(cara5, ANTIHORARIO);
-        else if (numFila == 3)
+        else if (numFila == 4)
             trasponerCara(cara4, HORARIO);  //mientras la fila inferior gira antihorario, la cara anexa se gira horario. Comprobar con un cubo real
 
         char[] filaCara1 = cara1.getFila(numFila);
@@ -124,7 +124,7 @@ public class Cubo5x5 {
         } else if (numColumna == 1)
             trasera = 3;
         else if (numColumna == 2)
-            trasera = 3;
+            trasera = 2;
         else if (numColumna == 3)
             trasera = 1;
         else if (numColumna == 4) {
@@ -218,30 +218,30 @@ public class Cubo5x5 {
      * @param sentido 'H' Horario 'A' antohirario
      */
     private void trasponerCara(Cara cara, char sentido) {
-        if (sentido == HORARIO) {
+        if (sentido == ANTIHORARIO) {
             char[] v_col0 = cara.getColumna(0);
             char[] v_col1 = cara.getColumna(1);
             char[] v_col2 = cara.getColumna(2);
             char[] v_col3 = cara.getColumna(3);
             char[] v_col4 = cara.getColumna(4);
 
-            cara.cambiarFila(0, v_col0);
-            cara.cambiarFila(1, v_col1);
+            cara.cambiarFila(0, v_col4);
+            cara.cambiarFila(1, v_col3);
             cara.cambiarFila(2, v_col2);
-            cara.cambiarFila(3, v_col3);
-            cara.cambiarFila(4, v_col4);
+            cara.cambiarFila(3, v_col1);
+            cara.cambiarFila(4, v_col0);
         } else {
             char[] v_fila0 = cara.getFila(0);
             char[] v_fila1 = cara.getFila(1);
             char[] v_fila2 = cara.getFila(2);
             char[] v_fila3 = cara.getFila(3);
-            char[] v_fila4 = cara.getFila(3);
+            char[] v_fila4 = cara.getFila(4);
 
-            cara.cambiarColumna(0, v_fila0);
-            cara.cambiarColumna(1, v_fila1);
+            cara.cambiarColumna(0, v_fila4);
+            cara.cambiarColumna(1, v_fila3);
             cara.cambiarColumna(2, v_fila2);
-            cara.cambiarColumna(3, v_fila3);
-            cara.cambiarColumna(4, v_fila4);
+            cara.cambiarColumna(3, v_fila1);
+            cara.cambiarColumna(4, v_fila0);
         }
     }
 

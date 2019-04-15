@@ -11,9 +11,9 @@ public class Test {
         cubo.girarFila_D(0);
         cubo.mostrarCubo();
 
-        System.out.println("Girar cara izquiera arriba------------------------------");
+        /*System.out.println("Girar cara izquiera arriba------------------------------");
         cubo.girarColumna_Arriba(0);
-        cubo.mostrarCubo();
+        cubo.mostrarCubo();*/
 
     }
 }
