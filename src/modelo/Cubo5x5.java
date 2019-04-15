@@ -1,4 +1,4 @@
-package com.rubik.modelo;
+package modelo;
 
 public class Cubo5x5 {
 
@@ -8,7 +8,7 @@ public class Cubo5x5 {
     private final Cara cara4;
     private final Cara cara5;
     private final Cara cara6;
-    
+
     public static final char ANTIHORARIO = 'A';
     public static final char HORARIO = 'H';
 

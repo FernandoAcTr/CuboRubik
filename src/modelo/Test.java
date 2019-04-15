@@ -1,4 +1,4 @@
-package com.rubik.modelo;
+package modelo;
 
 public class Test {
     public static void main(String[] args) {

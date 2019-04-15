@@ -1,4 +1,4 @@
-package com.rubik.modelo;
+package modelo;
 
 public class Cara {
     private final char[][] colores;
